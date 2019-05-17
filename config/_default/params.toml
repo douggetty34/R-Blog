@@ -9,7 +9,7 @@ day_night = true
 
 # Font style.
 #   Choose from `default`, `classic`, or `playfair`.
-font = "classic"
+font = "playfair"
 
 # Description for social sharing and search engines. If undefined, superuser role is used in place.
 description = ""
@@ -50,9 +50,9 @@ time_format = "3:04 PM"
 ############################
 
 # Enter contact details (optional). To hide a field, clear it to "".
-email = "test@example.org"
-phone = "888 888 88 88"
-address = "Building 1 Room 1, Stanford University, California, 90210, USA"
+email = "doug.getty@pitt.edu"
+phone = ""
+address = "Learning Research and Development Center, 3939 O'Hara St, Pittsburgh, PA 15213"
 
 # Office hours: use `<br>` to insert a line break, or set to "" to remove office hours
 # office_hours = """Monday 10:00 to 13:00<br>
@@ -60,17 +60,18 @@ address = "Building 1 Room 1, Stanford University, California, 90210, USA"
 office_hours = ""
 
 # Enter an optional link for booking appointments (e.g. calendly.com).
-#appointment_url = "https://calendly.com"
-appointment_url = "https://calendly.com"
+appointment_url = ""
+
 
 
 # Contact links
 #   Set to `[]` to disable, or comment out unwanted lines with a hash `#`.
 contact_links = [
-  {icon = "twitter", icon_pack = "fab", name = "DM Me", link = "https://twitter.com/Twitter"},
-  {icon = "skype", icon_pack = "fab", name = "Skype Me", link = "skype:echo123?call"},
-  {icon = "keybase", icon_pack = "fab", name = "Chat on Keybase", link = "https://keybase.io/"},
-  {icon = "comments", icon_pack = "fas", name = "Discuss on Forum", link = "https://discourse.gohugo.io"},
+  {icon = "twitter", icon_pack = "fab", name = "Tweets", link = "https://twitter.com/doug__getty"},
+  {icon = "github", icon_pack = "fab", name = "Code", link = "https://github.com/douggetty34"},
+  #{icon = "skype", icon_pack = "fab", name = "Skype Me", link = "skype:echo123?call"},
+  #{icon = "keybase", icon_pack = "fab", name = "Chat on Keybase", link = "https://keybase.io/"},
+  #{icon = "comments", icon_pack = "fas", name = "Discuss on Forum", link = "https://discourse.gohugo.io"},
   # {icon = "telegram", icon_pack = "fab", name = "Telegram Me", link = "https://telegram.me/@Telegram"},
   ]
 
@@ -113,13 +114,13 @@ plugins_js  = []
 gravatar = false
 
 # Align the main menu to the right of the page? (true/false)
-menu_align_right = false
+menu_align_right = true
 
 # Show estimated reading time for posts? (true/false)
 reading_time = true
 
 # Display comment count (if commenting enabled in config.toml)? (true/false)
-comment_count = true
+comment_count = false
 
 # Display next/previous section pager? (true/false)
 section_pager = false
