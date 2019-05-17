@@ -1,11 +1,9 @@
 ---
 authors:
 - admin
-bio: My research interests include distributed robotics, mobile computing and programmable
-  matter.
+bio: My research interests include language processing, speech variability, and syntactic processing.
 education:
   courses:
-<<<<<<< HEAD
   - course: PhD in Cognitive Psychology
     institution: University of Pittsburgh
     year: 2018-present
@@ -13,33 +11,15 @@ education:
     institution: Westminster College
     year: 2016
 email: "doug.getty@pitt.edu"
-=======
-  - course: PhD in Artificial Intelligence
-    institution: Stanford University
-    year: 2012
-  - course: MEng in Artificial Intelligence
-    institution: Massachusetts Institute of Technology
-    year: 2009
-  - course: BSc in Artificial Intelligence
-    institution: Massachusetts Institute of Technology
-    year: 2008
-email: ""
->>>>>>> parent of 8a1df1b... update bio
 interests:
 - Language Processing
 - Speech Variability
 - Syntactic Processing
 name: Doug Getty
 organizations:
-<<<<<<< HEAD
 - name: University of Pittsburgh
   url: "http://www.lrdc.pitt.edu/maplelab/"
 role: Graduate Student
-=======
-- name: Stanford University
-  url: ""
-role: Professor of Artificial Intelligence
->>>>>>> parent of 8a1df1b... update bio
 social:
 - icon: envelope
   icon_pack: fas
