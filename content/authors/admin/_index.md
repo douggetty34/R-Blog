@@ -30,7 +30,7 @@ social:
 - icon: github
   icon_pack: fab
   link: https://github.com/douggetty34
-  - icon: osf
+- icon: osf
   icon_pack: ai
   link: osf.io/63t9p
 superuser: true
