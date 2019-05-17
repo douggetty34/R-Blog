@@ -24,7 +24,7 @@ date_format = "Jan 2006"
   location = "Pennsylvania"
   date_start = "2018-08-01"
   date_end = ""
-  description = """
+  description = ""
 
 [[experience]]
   title = "Research Assistant"
@@ -43,5 +43,4 @@ date_format = "Jan 2006"
   date_start = "2013-08-01"
   date_end = "2016-06-01"
   description = """Collect and analyze electrophysiological and behavioral data, assist students with undergraduate thesis work."""
-  
 +++
