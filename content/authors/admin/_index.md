@@ -1,9 +1,11 @@
 ---
 authors:
 - admin
-bio: My research interests include language processing, processing variablity in speech, and syntactic priming.
+bio: My research interests include distributed robotics, mobile computing and programmable
+  matter.
 education:
   courses:
+<<<<<<< HEAD
   - course: PhD in Cognitive Psychology
     institution: University of Pittsburgh
     year: 2018-present
@@ -11,15 +13,33 @@ education:
     institution: Westminster College
     year: 2016
 email: "doug.getty@pitt.edu"
+=======
+  - course: PhD in Artificial Intelligence
+    institution: Stanford University
+    year: 2012
+  - course: MEng in Artificial Intelligence
+    institution: Massachusetts Institute of Technology
+    year: 2009
+  - course: BSc in Artificial Intelligence
+    institution: Massachusetts Institute of Technology
+    year: 2008
+email: ""
+>>>>>>> parent of 8a1df1b... update bio
 interests:
 - Language Processing
 - Speech Variability
 - Syntactic Processing
 name: Doug Getty
 organizations:
+<<<<<<< HEAD
 - name: University of Pittsburgh
   url: "http://www.lrdc.pitt.edu/maplelab/"
 role: Graduate Student
+=======
+- name: Stanford University
+  url: ""
+role: Professor of Artificial Intelligence
+>>>>>>> parent of 8a1df1b... update bio
 social:
 - icon: envelope
   icon_pack: fas
@@ -39,4 +59,6 @@ user_groups:
 - Visitors
 ---
 
-I’m a PhD student at the University of Pittsburgh in the Cognitive Psychology program. My research interests include language processing, processing variablity in speech, and syntactic priming. I am also interested in data analysis methods. In my free time I enjoy rock climbing, biking, and any other activity where I can be outside.
+Nelson Bighetti is a professor of artificial intelligence at the Stanford AI Lab. His research interests include distributed robotics, mobile computing and programmable matter. He leads the Robotic Neurobiology group, which develops self-reconfiguring robots, systems of self-organizing robots, and mobile sensor networks.
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique placerat feugiat ac, facilisis vitae arcu. Proin eget egestas augue. Praesent ut sem nec arcu pellentesque aliquet. Duis dapibus diam vel metus tempus vulputate. 
