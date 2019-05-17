@@ -21,9 +21,6 @@ organizations:
   url: "http://www.lrdc.pitt.edu/maplelab/"
 role: Graduate Student
 social:
-- icon: envelope
-  icon_pack: fas
-  link: '#contact'
 - icon: twitter
   icon_pack: fab
   link: https://twitter.com/doug__getty
@@ -33,12 +30,14 @@ social:
 - icon: github
   icon_pack: fab
   link: https://github.com/douggetty34
+  - icon: osf
+  icon_pack: ai
+  link: osf.io/63t9p
 superuser: true
 user_groups:
 - Researchers
 - Visitors
 ---
 
-Nelson Bighetti is a professor of artificial intelligence at the Stanford AI Lab. His research interests include distributed robotics, mobile computing and programmable matter. He leads the Robotic Neurobiology group, which develops self-reconfiguring robots, systems of self-organizing robots, and mobile sensor networks.
+I’m a PhD student at the University of Pittsburgh in the Cognitive Psychology program. My research interests include language processing, processing variablity in speech, and syntactic priming. I am also interested in quantitative methods. In my free time I enjoy rock climbing, biking, and occasionally get motivated to bake.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed neque elit, tristique placerat feugiat ac, facilisis vitae arcu. Proin eget egestas augue. Praesent ut sem nec arcu pellentesque aliquet. Duis dapibus diam vel metus tempus vulputate. 

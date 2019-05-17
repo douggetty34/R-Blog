@@ -65,8 +65,7 @@ appointment_url = ""
 contact_links = [
   {icon = "twitter", icon_pack = "fab", name = "Tweets", link = "https://twitter.com/doug__getty"},
   #{icon = "github", icon_pack = "fab", name = "Code", link = "https://github.com/douggetty34"},
-  #{icon = "skype", icon_pack = "fab", name = "Skype Me", link = "skype:echo123?call"},
-  #{icon = "keybase", icon_pack = "fab", name = "Chat on Keybase", link = "https://keybase.io/"},
+  #{icon = "osf", icon_pack = "ai", name = "OSF", link = "osf.io/63t9p"},
   #{icon = "comments", icon_pack = "fas", name = "Discuss on Forum", link = "https://discourse.gohugo.io"},
   # {icon = "telegram", icon_pack = "fab", name = "Telegram Me", link = "https://telegram.me/@Telegram"},
   ]
