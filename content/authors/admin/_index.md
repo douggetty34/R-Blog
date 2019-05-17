@@ -14,7 +14,7 @@ email: "doug.getty@pitt.edu"
 interests:
 - Language Processing
 - Speech Variability
-- Syntactic Processing
+- Quantitative Methods
 name: Doug Getty
 organizations:
 - name: University of Pittsburgh
@@ -32,7 +32,7 @@ social:
   link: https://github.com/douggetty34
 - icon: osf
   icon_pack: ai
-  link: osf.io/63t9p
+  link: https://osf.io/63t9p/
 superuser: true
 user_groups:
 - Researchers
