@@ -1,0 +1,3 @@
+options(servr.daemon = T, 
+        blogdown.author = "Doug Getty",
+        blogdown.yaml.empty = T)
