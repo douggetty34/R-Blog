@@ -1,7 +1,7 @@
 ---
 authors:
 - admin
-bio: My research interests include language processing, speech variability, and syntactic processing.
+bio: My research interests include language processing, how humans handle variablity in speech, and quantitative methods.
 education:
   courses:
   - course: PhD in Cognitive Psychology
@@ -39,5 +39,5 @@ user_groups:
 - Visitors
 ---
 
-I’m a PhD student at the University of Pittsburgh in the Cognitive Psychology program. My research interests include language processing, processing variablity in speech, and syntactic priming. I am also interested in quantitative methods. In my free time I enjoy rock climbing, biking, and occasionally get motivated to bake.
+I’m a PhD student at the University of Pittsburgh in the Cognitive Psychology program. My research interests include language processing, how humans handle variablity in speech, and quantitative methods. In my free time I like to climb rocks, attend angsty concerts, and ride my bike around Pittsburgh.
 
