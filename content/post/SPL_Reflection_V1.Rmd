@@ -33,7 +33,7 @@ model.info.extractor <- function(dataset, filter.low, filter.high, model.formula
   data <- filter(dataset, logRT > log(filter.low), logRT < log(filter.high))
   
   # Initialize output
-  p.vals <- data.frame(sample = vector("integer", length(Subs)), 
+  p.vals <- data.frame(Subs = vector("integer", length(Subs)), 
                        p.val = vector("double", length(Subs)), 
                        effect = vector("double", length(Subs)))
   
@@ -64,7 +64,7 @@ model.info.extractor <- function(dataset, filter.low, filter.high, model.formula
 The first argument of the function is the dataset we want to extract p-values and effect sizes from. My data is made up of reaction times, and many of them are unrealistically short or long. So, I added arguments to the function that allow me to specify how I want to filter the reaction times. I also added an argument to specify the formula of the model I would like to test. The function is a little long and unwieldy so I’ve hidden it from view here, but the body of function is viewable at the link at the bottom of this post.
 
 
-## P-values
+## Just how variable are p-values?
 ```{r, message=FALSE}
 Change <- model.info.extractor(data, 150, 2000,
                                       logRT ~ Condition + logTrial + Duration
@@ -78,7 +78,7 @@ head(Change, n = 5)
 After running the function with the arguments above, I used ggplot to graph the p-values in order to answer my first question. 
 
 ```{r}
-ggplot(Change, aes(x = sample, y = p.val)) +
+ggplot(Change, aes(x = Subs, y = p.val)) +
   geom_point() +
   geom_line() +
   geom_hline(yintercept = .05, color = "red") +
@@ -88,11 +88,11 @@ ggplot(Change, aes(x = sample, y = p.val)) +
 
   For the first 30 or so participants, the p-value fluctates a lot with each new participant but generally seems to decrease. After that, it looks like there is less fluctuation and no certain trend in one direction or another. Between participants 50 through 55, the p-value dips below that .05 threshold needed for sweet, sweet scientific glory. Luckily, and yet also frustratingly, my advisor and I had set a target sample size of 70 participants. If I had analyzed my data  when I added these participants to the sample, I would not have been tempted to stop data collection there. But, it's easy to imagine how stopping data collection as soon as the p-value is significant might become more tempting if I was gathering data from a difficult-to-recruit population or felt under more pressure to publish. For me, this illustrates the value of registering study plans before starting data collection to prevent p-hacking.
   
-  ##Effect Size
+##Is the effect size from a small pilot sample a good estimate for the true effect size?
 Given the variablity of p-values as the sample size grows, let's see if the size of the effect is similarly variable over the course of a study. As mentioned earlier, it is common practice to use the effect from a small number of subjects early on in data collection to estimate a target sample size using a power analysis. But if effect sizes are really variable, a power analysis might not yield a reliable target sample size. If the effect size is an underestimate of the true effect, a power analysis would lead you to collect a larger sample than necessary. While this is not always bad, it can cause practical problems if data collection for a project is costly or time-intensive. Alternatively, if the effect size is an overestimate of the true effect, a power analysis would lead to an underestimate of sample size required to be able to reliably detect an effect. This could lead researchers not to detect effects when they actualy do exist. 
   
 ```{r}
-ggplot(Change, aes(x = sample, y = effect)) +
+ggplot(Change, aes(x = Subs, y = effect)) +
   geom_point() +
   geom_line() +
   geom_hline(yintercept = Change$effect[1], color = "blue") +
@@ -102,7 +102,7 @@ ggplot(Change, aes(x = sample, y = effect)) +
 
   The blue line here represents the effect of `r Change$effect[1]` for subjects 1-8, which is the value that I would have used as the effect size estimate in a power analysis. Just from inspecting the graph, it seems that the effect behaves similarly to the p-value in that it is volatile at first and then stabilizes. This makes sense given that the p-value is derived in part from the effect. The biggest difference to me is that it seems harder to argue that there is a clear directional trend. The effect size of `r Change$effect[1]` for subjects 1-8 is not very far off from the effect size of `r Change$effect[length(Change$effect)]`. In my case, I would have been lucky to use the effect for subjects 1-8. But the extreme volatility of the effect size early on  seems problematic for using effect sizes from small samples as estimates of the true effect size. Using `r Change$effect[1]` seems as though it could lead to very different power analysis results than using `r Change$effect[7]` from subjects 1-14. Luckily, we can test this by simply entering the different effect values into a power analysis. 
   
-  Let's take a look at the model parameters for subjects 1-8, and then we'll use those parameters in a power analysis.
+Let's take a look at the model parameters for subjects 1-8, and then we'll use those parameters in a power analysis.
 ```{r, echo = T, results = 'hide'}
 data.sub <- data %>%
   filter(SubjectID %in% c(1:8), logRT > log(150), logRT < log(2000))
@@ -112,7 +112,7 @@ data.sub <- data %>%
     contrasts(data.sub$Condition) 
 ```    
   
-  Now that we've set up the data and the contrasts we'll use on the `Condition` variable, we can run the following model:
+Now that we've set up the data and the contrasts we'll use on the `Condition` variable, we can run the following model:
 ```{r}    
 model1 <- lmer(logRT ~ Condition + logTrial + Duration 
                                       + (1 + Condition + logTrial|SubjectID) 
@@ -120,9 +120,9 @@ model1 <- lmer(logRT ~ Condition + logTrial + Duration
 model.summary <- summary(model1)
 ```
 
-  I will run a power analysis using the parameters from the above model as estimates. Power analyses for mixed effects models are a bit different than standard power analysis because they require simuluting data that have the random effects structure you are trying to model. If that doesn't make sense that's fine: the implciation is that I will run the power analysis for the smaller effect estimate and the larger effect estimate in a separate script.
+I will run a power analysis using the parameters from the above model as estimates. Power analyses for mixed effects models are a bit different than standard power analysis because they require simuluting data that have the random effects structure you are trying to model. If that doesn't make sense that's fine: the implciation is that I will run the power analysis for the smaller effect estimate and the larger effect estimate in a separate script.
   
-  The input for the power analysis are the fixed effect coefficients, the random effect variances, and the sample size for which we'd like a power assessment. The output is a set of TRUE/FALSE values indicating whether each fixed effect was significant for a given simulation. By calculating the percentage of TRUE values, we get an estimate of statistical power. In my analysis, I set the number of subjects to 80 and then ran 100 simulations with the large effect size estimate and 100 more with the small effect size. The results are below.
+The input for the power analysis are the fixed effect coefficients, the random effect variances, and the sample size for which we'd like a power assessment. The output is a set of TRUE/FALSE values indicating whether each fixed effect was significant for a given simulation. By calculating the percentage of TRUE values, we get an estimate of statistical power. In my analysis, I set the number of subjects to 80 and then ran 100 simulations with the large effect size estimate and 100 more with the small effect size. The results are below.
   
 ```{r, message=FALSE}
 # Load up the power analyses
@@ -149,10 +149,10 @@ power %>%
   theme_bw()
 ```
   
-  The power analysis with the large effect size estimates approximately 25% power using the large effect size of `r Change$effect[1]`, and approximately 8% power using the small effect size of `r Change$effect[7]`. First off, both effects are under-powered at 80 subjects. Even given that the large effect is the better estimate, we still only would detect a significant effect of this size 25% of the time with a sample of 80. Second, the effect size that is used seems to be consequential for power calculations. Using the small effect size would have lead me to collect data from far more participants than using the slightly larger effect size. It is concerning that I could have just easily picked one or the other for my effect estimate. It seems like a less noisy way to conduct power analyses would be to use past literature as a guide for effect size, although this is not always possible if a given line of research is new.
+The power analysis with the large effect size estimates approximately 25% power using the large effect size of `r Change$effect[1]`, and approximately 8% power using the small effect size of `r Change$effect[7]`. First off, both effects are under-powered at 80 subjects. Even given that the large effect is the better estimate, we still only would detect a significant effect of this size 25% of the time with a sample of 80. Second, the effect size that is used seems to be consequential for power calculations. Using the small effect size would have lead me to collect data from far more participants than using the slightly larger effect size. It is concerning that I could have just easily picked one or the other for my effect estimate. It seems like a less noisy way to conduct power analyses would be to use past literature as a guide for effect size, although this is not always possible if a given line of research is new.
   
-  ##tl;dr
-  P-values in my dataset were quite variable. Without a strong a priori sample size, this could have lead me to stop data collection as soon as I saw a significant effect. Effect sizes were quite variable too. While the method of using a small sample to estimate the true effect size might be necessary in some situations, it does not seem like the best way to estimate the necessary sample size. 
+##tl;dr
+P-values in my dataset were quite variable. Without a strong a priori sample size, this could have lead me to stop data collection as soon as I saw a significant effect. Effect sizes were quite variable too. While the method of using a small pilot sample to estimate the true effect size might be necessary in some situations, it does not seem like the best way to estimate the sample size to achieve adequate statistical power. 
   
   
 

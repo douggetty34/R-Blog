@@ -18,8 +18,8 @@ data &lt;- read_csv(&quot;data_clean.csv&quot;) %&gt;%
 <p>To answer the both questions, I wrote a function in R that runs a regression model on progressively larger and larger datasets. It begins with participants 1 through 8, then adds participants one at a time until the full dataset participants is included. The function saves the p-value and the effect size for each loop. The general form of the function is below:</p>
 <pre class="r"><code>&#39;model.info.extractor(dataset, filter.low, filter.high, model.formula)&#39;</code></pre>
 <p>The first argument of the function is the dataset we want to extract p-values and effect sizes from. My data is made up of reaction times, and many of them are unrealistically short or long. So, I added arguments to the function that allow me to specify how I want to filter the reaction times. I also added an argument to specify the formula of the model I would like to test. The function is a little long and unwieldy so I’ve hidden it from view here, but the body of function is viewable at the link at the bottom of this post.</p>
-<div id="p-values" class="section level2">
-<h2>P-values</h2>
+<div id="just-how-variable-are-p-values" class="section level2">
+<h2>Just how variable are p-values?</h2>
 <pre class="r"><code>Change &lt;- model.info.extractor(data, 150, 2000,
                                       logRT ~ Condition + logTrial + Duration
                                       + (1 + Condition + logTrial|SubjectID)
@@ -27,14 +27,14 @@ data &lt;- read_csv(&quot;data_clean.csv&quot;) %&gt;%
 
 # View the first few rows to make sure the function worked
 head(Change, n = 5)</code></pre>
-<pre><code>##   sample     p.val     effect Subs
-## 1      0 0.6467623 0.02395655    8
-## 2      0 0.6640786 0.02244937    9
-## 3      0 0.5370107 0.02946573   10
-## 4      0 0.6401067 0.02109087   11
-## 5      0 0.6243191 0.02064129   12</code></pre>
+<pre><code>##   Subs     p.val     effect
+## 1    8 0.6467623 0.02395655
+## 2    9 0.6640786 0.02244937
+## 3   10 0.5370107 0.02946573
+## 4   11 0.6401067 0.02109087
+## 5   12 0.6243191 0.02064129</code></pre>
 <p>After running the function with the arguments above, I used ggplot to graph the p-values in order to answer my first question.</p>
-<pre class="r"><code>ggplot(Change, aes(x = sample, y = p.val)) +
+<pre class="r"><code>ggplot(Change, aes(x = Subs, y = p.val)) +
   geom_point() +
   geom_line() +
   geom_hline(yintercept = .05, color = &quot;red&quot;) +
@@ -42,8 +42,11 @@ head(Change, n = 5)</code></pre>
   theme_bw()</code></pre>
 <p><img src="/post/SPL_Reflection_V1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>For the first 30 or so participants, the p-value fluctates a lot with each new participant but generally seems to decrease. After that, it looks like there is less fluctuation and no certain trend in one direction or another. Between participants 50 through 55, the p-value dips below that .05 threshold needed for sweet, sweet scientific glory. Luckily, and yet also frustratingly, my advisor and I had set a target sample size of 70 participants. If I had analyzed my data when I added these participants to the sample, I would not have been tempted to stop data collection there. But, it’s easy to imagine how stopping data collection as soon as the p-value is significant might become more tempting if I was gathering data from a difficult-to-recruit population or felt under more pressure to publish. For me, this illustrates the value of registering study plans before starting data collection to prevent p-hacking.</p>
-<p>##Effect Size Given the variablity of p-values as the sample size grows, let’s see if the size of the effect is similarly variable over the course of a study. As mentioned earlier, it is common practice to use the effect from a small number of subjects early on in data collection to estimate a target sample size using a power analysis. But if effect sizes are really variable, a power analysis might not yield a reliable target sample size. If the effect size is an underestimate of the true effect, a power analysis would lead you to collect a larger sample than necessary. While this is not always bad, it can cause practical problems if data collection for a project is costly or time-intensive. Alternatively, if the effect size is an overestimate of the true effect, a power analysis would lead to an underestimate of sample size required to be able to reliably detect an effect. This could lead researchers not to detect effects when they actualy do exist.</p>
-<pre class="r"><code>ggplot(Change, aes(x = sample, y = effect)) +
+</div>
+<div id="is-the-effect-size-from-a-small-pilot-sample-a-good-estimate-for-the-true-effect-size" class="section level2">
+<h2>Is the effect size from a small pilot sample a good estimate for the true effect size?</h2>
+<p>Given the variablity of p-values as the sample size grows, let’s see if the size of the effect is similarly variable over the course of a study. As mentioned earlier, it is common practice to use the effect from a small number of subjects early on in data collection to estimate a target sample size using a power analysis. But if effect sizes are really variable, a power analysis might not yield a reliable target sample size. If the effect size is an underestimate of the true effect, a power analysis would lead you to collect a larger sample than necessary. While this is not always bad, it can cause practical problems if data collection for a project is costly or time-intensive. Alternatively, if the effect size is an overestimate of the true effect, a power analysis would lead to an underestimate of sample size required to be able to reliably detect an effect. This could lead researchers not to detect effects when they actualy do exist.</p>
+<pre class="r"><code>ggplot(Change, aes(x = Subs, y = effect)) +
   geom_point() +
   geom_line() +
   geom_hline(yintercept = Change$effect[1], color = &quot;blue&quot;) +
@@ -89,5 +92,8 @@ power %&gt;%
   theme_bw()</code></pre>
 <p><img src="/post/SPL_Reflection_V1_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>The power analysis with the large effect size estimates approximately 25% power using the large effect size of 0.0239566, and approximately 8% power using the small effect size of 0.010366. First off, both effects are under-powered at 80 subjects. Even given that the large effect is the better estimate, we still only would detect a significant effect of this size 25% of the time with a sample of 80. Second, the effect size that is used seems to be consequential for power calculations. Using the small effect size would have lead me to collect data from far more participants than using the slightly larger effect size. It is concerning that I could have just easily picked one or the other for my effect estimate. It seems like a less noisy way to conduct power analyses would be to use past literature as a guide for effect size, although this is not always possible if a given line of research is new.</p>
-<p>##tl;dr P-values in my dataset were quite variable. Without a strong a priori sample size, this could have lead me to stop data collection as soon as I saw a significant effect. Effect sizes were quite variable too. While the method of using a small sample to estimate the true effect size might be necessary in some situations, it does not seem like the best way to estimate the necessary sample size.</p>
+</div>
+<div id="tldr" class="section level2">
+<h2>tl;dr</h2>
+<p>P-values in my dataset were quite variable. Without a strong a priori sample size, this could have lead me to stop data collection as soon as I saw a significant effect. Effect sizes were quite variable too. While the method of using a small pilot sample to estimate the true effect size might be necessary in some situations, it does not seem like the best way to estimate the sample size to achieve adequate statistical power.</p>
 </div>
