@@ -183,7 +183,6 @@ P-values seem to be quite variable over the course of data collection. This high
 ##Additional Questions
 1. In my dataset, the p-value dipped below .05 twice. If I had collected my participants in a different order, would this have happened?
 2. Does this happen on other datasets? Could I create simulated data with the same parameters and examine whether or not the p-value might behave similiarly? 
-3. How would increasing the pilot sample size by a few participants influence the accuracy of the effect size estimate?
 
 
 
