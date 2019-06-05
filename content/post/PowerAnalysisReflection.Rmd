@@ -1,8 +1,7 @@
 ---
 title: "Protecting against sketchy research practices: p-values, effect sizes, and power analyses"
 author: "Doug Getty"
-date: "2019-05-18"
-output: html_document
+date: 2019-06-05
 tags: ["power analysis","p-hacking","lme4"]
 ---
 
