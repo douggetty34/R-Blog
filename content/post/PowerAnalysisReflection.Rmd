@@ -180,10 +180,9 @@ ggplot(Change) +
 ##tl;dr
 P-values seem to be quite variable over the course of data collection. This highlights the need for a good a priori sample size or data collection stopping rule that is independent of the p-value. Power analyses are a good way to come up with an a priori sample size. In the absence of a good estimate of effect size in the prior literature, we can use a small pilot sample to generate an estimate. The method of using a small pilot sample to estimate the true effect size might be necessary in some situations. In the absence of prior literature on an effect, a small pilot sample can be a useful estimate of effect size.  
   
-##Additional Questions
+####Additional Questions
 1. In my dataset, the p-value dipped below .05 twice. If I had collected my participants in a different order, would this have happened?
 2. Does this happen on other datasets? Could I create simulated data with the same parameters and examine whether or not the p-value might behave similiarly? 
-3. How would increasing the pilot sample size by a few participants influence the accuracy of the effect size estimate?
 
 
 
