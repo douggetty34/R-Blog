@@ -1,15 +1,14 @@
 ---
 title: "Protecting against sketchy research practices: p-values, effect sizes, and power analyses"
 author: "Doug Getty"
-date: 2019-06-05
+date: 2019-06-21
 tags: ["power analysis","p-hacking","lme4"]
 ---
 
 
 
-<p>In my statistics class this Spring, we had a discussion about scientific reproducibility and practices that can lead to p-hacking. In particular, we talked about the value of running power analyses before a study to estimate a sufficient sample size.</p>
-<p>Two points came up in the class discussion that I have been interested to test on a real dataset. The first point is that p-values for a model can fluctuate quite dramatically with the addition of each new piece of data. Without an a priori defined sample size, this can lead researchers to collect a set of data, run an analysis, and then collect more data if the p-value is not significant. In the biz, this practice is widely considered p-hacking. The second point is that, in the absence of prior literature on an effect, researchers can collect data from a small pilot sample and then use the effect size from that sample as an estimate for the actual effect size. From there, the researcher can do a power analysis to estimate the required sample size to detect a significant effect. In the simplest cases the only thing needed to run a power analysis is an estimate of the effect size of interest. Having a good estimate of the effect size allows researchers to conduct a power analysis and define a sample size before data collection and (ideally) protects against one type of p-hacking.</p>
-<p>These points generated some questions for me: 1) In my own wild caught data, how much does the p-value actually fluctuate as sample size increases? If I analyzed my data with every new subject, is it possible that the p-value could dip below .05 and then become non-signicant again? 2) If the p-value is variable, could the effect size also be variable? And if the effect size is highly variable, using the effect size from a pilot sample might not be a very useful estimate for the true effect size.</p>
+<p>In my statistics class this Spring, we had a discussion about scientific reproducibility and practices that can lead to p-hacking. Two points came up in the class discussion that I have been interested to test on a real dataset. The first point is that p-values for a model can fluctuate quite dramatically with the addition of each new piece of data. Without an a priori defined sample size, this can lead researchers to collect a set of data, run an analysis, and then collect more data if the p-value is not significant. In the biz, this practice is widely considered p-hacking. The second point is that, in the absence of prior literature on an effect, researchers can collect data from a small pilot sample and then use the effect size from that sample as an estimate for the true effect size. With that information, the researcher can conduct a power analysis to estimate the required sample size to detect a significant effect. Having a good estimate of the effect size allows researchers to conduct a power analysis and define a sample size before data collection and (ideally) protects against one type of p-hacking.</p>
+<p>These points generated some questions for me: 1) In my own wild caught data, how much will the p-value behave as sample size increases? If I analyzed my data with every new subject, is it possible that the p-value could alternate back and forth across the .05 threshold? 2) If the p-value is variable, could the effect size also be variable? And if the effect size is highly variable, using the effect size from a pilot sample might not be a very useful estimate for the true effect size.</p>
 <pre class="r"><code>library(tidyverse)
 library(lme4)
 library(lmerTest)
@@ -115,7 +114,7 @@ Change</code></pre>
 ## 57     64 0.09677430 0.028000392
 ## 58     65 0.06466498 0.030765681
 ## 59     66 0.08349184 0.028497436</code></pre>
-<p>The function takes quite a while to run, so I ran it once and then saved the results in .csv to save myself 10 minutes every time I wanted to run this document. I left the function call as a comment in the text above.</p>
+<p>The function takes quite a while to run, so I ran it once and then saved the results in .csv to save myself 10 minutes every time I wanted to run this document. I left the function call as a comment in the code chunk above.</p>
 <p>After running the function with the arguments above, I used ggplot to graph the p-values in order to answer my first question about how the p-value behaves over time.</p>
 <pre class="r"><code>ggplot(Change, aes(x = sample, y = p.val)) +
   geom_point() +
@@ -140,7 +139,7 @@ Change</code></pre>
 <p>The blue line here represents the effect of 0.0239566 for subjects 1-8, which is the value that I would have used to estimate the true effect size had I done a power analysis. Just from inspecting the graph, it seems that the effect behaves similarly to the p-value in that it is volatile at first and then stabilizes. This makes sense given that the p-value is derived in part from the effect. The biggest difference from p-value variability is that it seems harder to argue that there is a clear directional trend.</p>
 <p>Notably, the effect size of 0.0239566 for subjects 1-8 is not very far off from the effect size of 0.0284974 for the whole sample of 66 subjects. In my case, I would have been lucky to use the effect for subjects 1-8. But the volatility of the effect size early on seems generally problematic for the strategy of using effect sizes from small samples as estimates of the true effect size.</p>
 <p>Presumably the order of my participants was random, so the early effect size volatility should be true no matter the order of the subjects. We can test this by randomly drawing a large number of hypothetical pilot participant groups from the dataset and seeing how often the effect is close to the one we observed above.</p>
-<pre class="r"><code>effect.size.extractor &lt;- function(dataset, sims, model.formula) {
+<pre class="r"><code>effect.size.extractor &lt;- function(dataset, sims, sample.size, model.formula) {
   
   n &lt;- length(unique(dataset$SubjectID))
   
@@ -160,7 +159,7 @@ Change</code></pre>
       mutate(RandSub = sample(1:n, n, replace = F)) %&gt;%
       right_join(data, by = &quot;SubjectID&quot;) %&gt;%
       #keep only random subjects 1-8
-      filter(RandSub &lt;= 8) %&gt;%
+      filter(RandSub &lt;= sample.size) %&gt;%
       #apply desired filters
       filter(logRT &gt; log(150), logRT &lt; log(2000))
     
@@ -175,36 +174,101 @@ Change</code></pre>
   }
   return(output)
 }</code></pre>
-<p>The above function runs a for loop that takes random subsets of 8 from the sample of 66 subjects, fits a regression model to that subset, and then stores the p.value and effect coefficient from the model. Let’s do this 1000 times and then look at the resulting distribution of effect sizes. For my sake, I’ll run it on a model without <code>Duration</code> as a fixed effect to help the function run a bit more quickly.</p>
-<pre class="r"><code># resample &lt;- effect.size.extractor(dataset = data, sims = 1000, model.formula = logRT ~ Condition + logTrial  
+<p>The above function runs a for loop that takes random subsets of 8 from the sample of 66 subjects, fits a regression model to that subset, and then stores the p-value and effect coefficient from the model. Let’s do this 1000 times and then look at the resulting distribution of effect sizes. For my sake, I’ll run it on a model without <code>Duration</code> as a fixed effect to help the function run a bit more quickly.</p>
+<pre class="r"><code># resample8 &lt;- effect.size.extractor(dataset = data, sims = 1000, sample.size = 8, model.formula = logRT ~ Condition + logTrial  
 #                                   + (1 + Condition + logTrial|SubjectID) + (1|ItemID))
-# write_csv(resample, &quot;resample.csv&quot;)
-resample &lt;- read.csv(&quot;resample.csv&quot;)</code></pre>
-<p>Similar to above, I saved the output to a .csv and then reloaded the file to save myself the time it takes for the function to run.</p>
-<pre class="r"><code>ggplot(resample, aes(x= effect)) +
+# resample$n &lt;- 8
+# write_csv(resample, &quot;resample8.csv&quot;)
+
+resample8 &lt;- read.csv(&quot;resample8.csv&quot;)</code></pre>
+<p>Similar to p-value function above, I saved the output to a .csv and then reloaded the file to save myself the time it takes for the function to run when knitting this document into the website.</p>
+<pre class="r"><code>ggplot(resample8, aes(x= effect)) +
   geom_histogram(binwidth = .005) +
-  geom_vline(xintercept = mean(resample$effect), color = &quot;red&quot;) +
+  geom_vline(xintercept = mean(resample8$effect), color = &quot;red&quot;) +
   geom_vline(xintercept = Change$effect[59], color = &quot;blue&quot;) +
   theme_bw()</code></pre>
 <p><img src="/post/PowerAnalysisReflection_files/figure-html/unnamed-chunk-8-1.png" width="672" /> The effects are centered around 0.0252309 (blue line) which is close to the actual effect of 0.0284974 from our full sample (red line). This is to be expected, as modelling a large number of small subsets effectively approximates one model with the full dataset. I expect with an infinite number of resamplings, these two would converge. However, the effects do seem to vary considerably around this number. If I had collected my data from subjects in a different order, I could have estimated an effect size ranging from -.10 to nearly 0.15 in a pilot sample.</p>
-<p>To visualize this pilot sample variation relative to how the effect sizes varied in the full data, I’ve added a rug plot of the resampled effect sizes to the y-axis of the line graph below.</p>
+<p>To visualize this pilot sample variation relative to how the effect sizes varied in the full dataset, I’ve added a rug plot of the resampled effect sizes to the y-axis of the line graph below.</p>
 <pre class="r"><code>ggplot(Change) +
   geom_point(aes(x = sample, y = effect)) +
   geom_line(aes(x = sample, y = effect)) +
-  geom_hline(yintercept = Change$effect[1], color = &quot;blue&quot;) +
+  geom_hline(yintercept = Change$effect[59], color = &quot;blue&quot;) +
   xlab(&quot;Cumulative Participants&quot;) + ylab(&quot;Effect of Condition&quot;) +
-  geom_rug(data = resample, aes(y = effect), col=rgb(.5,0,0,alpha=.15)) +
+  geom_rug(data = resample8, aes(y = effect), col=rgb(.5,0,0,alpha=.15)) +
   theme_bw()</code></pre>
 <p><img src="/post/PowerAnalysisReflection_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>With pilot sample of only 8 participants, there seems to be a great deal of variability around the effect size. Most effect sizes are clustered near the true effect size of 0.0284974 (blue line), though it would be plausible to estimate an effect size that’s near zero or even negative. Obtaining an effect size near or less than zero would have a large influence on the results of a power analysis. This suggests to me that a pilot sample of this size might not be large enough. Let’s see if the effect size estimates get more accurate with larger pilot samples.</p>
+<pre class="r"><code># resample12 &lt;- effect.size.extractor(dataset = data, sims = 1000, sample.size = 12,
+#                                   model.formula = logRT ~ Condition + logTrial
+#                                   + (1 + Condition + logTrial|SubjectID) + (1|ItemID))
+# resample12$n &lt;- 12
+# write_csv(resample12, &quot;resample12.csv&quot;)
+
+# resample16 &lt;- effect.size.extractor(dataset = data, sims = 1000, sample.size = 16,
+#                                   model.formula = logRT ~ Condition + logTrial
+#                                   + (1 + Condition + logTrial|SubjectID) + (1|ItemID))
+# resample16$n &lt;- 16
+# write_csv(resample16, &quot;resample16.csv&quot;)
+
+# resample20 &lt;- effect.size.extractor(dataset = data, sims = 1000, sample.size = 20,
+#                                   model.formula = logRT ~ Condition + logTrial
+#                                   + (1 + Condition + logTrial|SubjectID) + (1|ItemID))
+# resample20$n &lt;- 20
+# write_csv(resample20, &quot;resample20.csv&quot;)</code></pre>
+<p>As before, I ran the <code>effect.size.extractor</code> and saved the output to .csv file.</p>
+<pre class="r"><code>resample8 &lt;- read_csv(&quot;resample8.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   SampleNum = col_integer(),
+##   p.val = col_double(),
+##   effect = col_double(),
+##   n = col_integer()
+## )</code></pre>
+<pre class="r"><code>resample12 &lt;- read_csv(&quot;resample12.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   SampleNum = col_integer(),
+##   p.val = col_double(),
+##   effect = col_double(),
+##   n = col_integer()
+## )</code></pre>
+<pre class="r"><code>resample16 &lt;- read_csv(&quot;resample16.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   SampleNum = col_integer(),
+##   p.val = col_double(),
+##   effect = col_double(),
+##   n = col_integer()
+## )</code></pre>
+<pre class="r"><code>resample20 &lt;- read_csv(&quot;resample20.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   SampleNum = col_integer(),
+##   p.val = col_double(),
+##   effect = col_double(),
+##   n = col_integer()
+## )</code></pre>
+<pre class="r"><code>resample.all &lt;- bind_rows(resample8, resample12, resample16, resample20) 
+
+resample.all %&gt;%
+  group_by(n) %&gt;%
+  mutate(effect.mean = mean(effect)) %&gt;%
+ggplot(aes(x= effect, group  = n)) +
+  geom_histogram(binwidth = .005) +
+  geom_vline(aes(xintercept = effect.mean), color = &quot;red&quot;) +
+  geom_vline(xintercept = Change$effect[59], color = &quot;blue&quot;) +
+  facet_grid(n~.) +
+  theme_bw()</code></pre>
+<p><img src="/post/PowerAnalysisReflection_files/figure-html/unnamed-chunk-11-1.png" width="672" /> As expected, larger pilot samples do lead to more accuracy as evidenced by the narrower distributions in the larger samples. A larger pilot sample will always be more likely to provide a better estimate of the true effect size, but it’s not clear exactly how large the pilot sample should be before it will provide an acceptable estimate.</p>
 </div>
 <div id="tldr" class="section level2">
 <h2>tl;dr</h2>
-<p>P-values seem to be quite variable over the course of data collection. This highlights the need for a good a priori sample size or data collection stopping rule that is independent of the p-value. Power analyses are a good way to come up with an a priori sample size. In the absence of a good estimate of effect size in the prior literature, we can use a small pilot sample to generate an estimate. The method of using a small pilot sample to estimate the true effect size might be necessary in some situations. In the absence of prior literature on an effect, a small pilot sample can be a useful estimate of effect size.</p>
-<div id="additional-questions" class="section level4">
-<h4>Additional Questions</h4>
+<p>P-values seem to be quite variable over the course of data collection. This highlights the need for a good a priori sample size or data collection stopping rule that is independent of the p-value. Power analyses are a good way to come up with an a priori sample size. In the absence of a good estimate of effect size in the prior literature, we can use a small pilot sample to generate an estimate. The method of using a small pilot sample to estimate the true effect size might be necessary in some situations. In the absence of prior literature on an effect, a small pilot sample can be a useful estimate of effect size. If going with this approach, researchers should be careful to collect a pilot sample that is large enough to be a good ballpark estimator of the true effect size.</p>
+<div id="unanswered-questions" class="section level4">
+<h4>Unanswered Questions</h4>
 <ol style="list-style-type: decimal">
-<li>In my dataset, the p-value dipped below .05 twice. If I had collected my participants in a different order, would this have happened?</li>
-<li>Does this happen on other datasets? Could I create simulated data with the same parameters and examine whether or not the p-value might behave similiarly?</li>
+<li>In this dataset, the p-value dipped below .05 twice. If the participants had been collected in a different order, would this have happened? Or was there something systematic that led to this?</li>
+<li>Does similar p-value dipping happen on other datasets? Could I create simulated data with the same parameters and examine whether or not the p-value might behave similiarly? 3a. How large does the pilot sample need to be before the effect size estimate is acceptable? 3b. In the dataset above, the effect size is very small. Does the size of the effect influence the accuracy of our effect size estimates? In other words, could we get away with a smaller pilot sample size when trying to make an estimate of a large effect size?</li>
 </ol>
 </div>
 </div>
